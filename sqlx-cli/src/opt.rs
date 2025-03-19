@@ -318,6 +318,17 @@ impl Deref for IgnoreMissing {
 impl Not for IgnoreMissing {
     type Output = bool;
 
+    /// Returns the logical negation of the instance's `ignore_missing` flag.
+    ///
+    /// This method consumes the instance and returns the inverse of its internal boolean value,
+    /// allowing the type to be used with the logical NOT (`!`) operator.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let flag = IgnoreMissing { ignore_missing: true };
+    /// assert_eq!(!flag, false);
+    /// ```
     fn not(self) -> Self::Output {
         !self.ignore_missing
     }
@@ -326,6 +337,32 @@ impl Not for IgnoreMissing {
 impl Deref for IgnoreChecksum {
     type Target = bool;
 
+    /// Dereferences the `IgnoreChecksum` instance to access its underlying boolean flag.
+    ///
+    /// This implementation enables treating an `IgnoreChecksum` as a boolean through automatic
+    /// dereferencing, simplifying its use in conditional expressions.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use std::ops::Deref;
+    ///
+    /// // Example structure demonstrating the usage of IgnoreChecksum.
+    /// struct IgnoreChecksum {
+    ///     ignore_checksum: bool,
+    /// }
+    ///
+    /// impl Deref for IgnoreChecksum {
+    ///     type Target = bool;
+    ///
+    ///     fn deref(&self) -> &Self::Target {
+    ///         &self.ignore_checksum
+    ///     }
+    /// }
+    ///
+    /// let flag = IgnoreChecksum { ignore_checksum: true };
+    /// assert_eq!(*flag, true);
+    /// ```
     fn deref(&self) -> &Self::Target {
         &self.ignore_checksum
     }
@@ -334,6 +371,19 @@ impl Deref for IgnoreChecksum {
 impl Not for IgnoreChecksum {
     type Output = bool;
 
+    /// Returns the logical negation of the `ignore_checksum` flag.
+    ///
+    /// This method inverts the value of the inner `ignore_checksum` field: if it is `true`, the method returns
+    /// `false`, and vice versa.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// // Create an instance of IgnoreChecksum with ignore_checksum set to true.
+    /// let flag = IgnoreChecksum { ignore_checksum: true };
+    /// // Applying logical NOT should yield false.
+    /// assert_eq!(!flag, false);
+    /// ```
     fn not(self) -> Self::Output {
         !self.ignore_checksum
     }

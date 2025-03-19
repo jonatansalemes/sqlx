@@ -271,6 +271,46 @@ fn validate_applied_migrations(
     Ok(())
 }
 
+/// Runs pending database migrations asynchronously.
+///
+/// This function applies all pending "up" migrations from the specified
+/// `migration_source` directory to the target database. It ensures the migrations
+/// table exists, checks for dirty migrations, and validates that applied migrations
+/// have not diverged from the migration files—unless `ignore_checksum` is true.
+/// If a `target_version` is provided, only migrations up to that version are applied,
+/// and an error is returned if the target version is lower than the latest applied migration.
+///
+/// - `migration_source`: The directory containing migration files.
+/// - `dry_run`: When true, simulates the migration process without applying changes.
+/// - `ignore_missing`: Allows applied migrations to be missing from the migration source.
+/// - `ignore_checksum`: Skips migration checksum validation if true.
+/// - `target_version`: Optionally limits migrations to those with a version less than or equal to this value.
+///
+/// # Returns
+///
+/// Returns `Ok(())` if migrations are successfully applied (or simulated), otherwise an error.
+///
+/// # Examples
+///
+/// ```no_run
+/// use sqlx_cli::migrate::run;
+/// use sqlx::ConnectOptions;
+///
+/// # async fn example() -> anyhow::Result<()> {
+/// // Initialize your connection options.
+/// let connect_opts = /* configure your ConnectOpts */;
+///
+/// let migration_source = "migrations";
+/// let dry_run = false;
+/// let ignore_missing = false;
+/// let ignore_checksum = false;
+/// let target_version = None;
+///
+/// // Execute pending migrations.
+/// run(migration_source, &connect_opts, dry_run, ignore_missing, ignore_checksum, target_version).await?;
+/// # Ok(())
+/// # }
+/// ```
 pub async fn run(
     migration_source: &str,
     connect_opts: &ConnectOpts,

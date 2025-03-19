@@ -41,6 +41,49 @@ pub async fn run(opt: Opt) -> Result<()> {
     }
 }
 
+/// Executes the operation specified by the command-line options.
+/// 
+/// This asynchronous function dispatches to the appropriate submodule based on the
+/// command provided in the `Opt` parameter. It supports multiple command types including:
+/// 
+/// - **Migration operations** such as adding, running (with optional checksum verification
+///   bypass via `ignore_checksum`), reverting, retrieving migration info, and building
+///   migration scripts.
+/// - **Database operations** like create, drop, reset, and setup.
+/// - **Preparation routines** for project setups.
+/// - **Shell completions** when the corresponding feature is enabled.
+/// 
+/// Each subcommand is processed asynchronously and any error encountered during the execution
+/// is propagated.
+/// 
+/// # Errors
+/// 
+/// Returns an error if the underlying operation fails.
+/// 
+/// # Examples
+/// 
+/// ```rust
+/// use your_crate::{do_run, Opt, Command, MigrateCommand};
+/// 
+/// #[tokio::main]
+/// async fn main() -> anyhow::Result<()> {
+///     // Example: Run a migration in dry-run mode while not ignoring checksum validation.
+///     let opt = Opt {
+///         command: Command::Migrate(MigrateCommand::Run {
+///             source: "migrations/".into(),
+///             dry_run: true,
+///             ignore_missing: false,
+///             ignore_checksum: false,
+///             connect_opts: Default::default(),
+///             target_version: None,
+///         }),
+///         // ...initialize other fields of Opt as required
+///     };
+///     
+///     do_run(opt).await?;
+///     Ok(())
+/// }
+/// ```
 async fn do_run(opt: Opt) -> Result<()> {
     match opt.command {
         Command::Migrate(migrate) => match migrate.command {

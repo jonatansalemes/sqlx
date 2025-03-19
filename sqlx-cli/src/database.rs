@@ -55,11 +55,56 @@ pub async fn reset(
     setup(migration_source, connect_opts).await
 }
 
+/// Sets up the database by ensuring it exists and applying migrations.
+///
+/// This function first creates the database (if it does not already exist) and then runs
+/// migrations from the specified source using the provided connection options.
+///
+/// # Arguments
+///
+/// * `migration_source` - A string slice that specifies the location or identifier for the migration files.
+///
+/// # Errors
+///
+/// Returns an error if the database creation or migration process fails.
+///
+/// # Examples
+///
+/// ```rust
+/// # async fn run_example() -> anyhow::Result<()> {
+/// let migration_source = "./migrations";
+/// let connect_opts = /* initialize your ConnectOpts here */;
+///
+/// // Setup the database by creating it and applying migrations.
+/// sqlx_cli::database::setup(migration_source, &connect_opts).await?;
+///
+/// Ok(())
+/// # }
+/// ```
 pub async fn setup(migration_source: &str, connect_opts: &ConnectOpts) -> anyhow::Result<()> {
     create(connect_opts).await?;
     migrate::run(migration_source, connect_opts, false, false, false, None).await
 }
 
+/// Prompts the user to confirm if they want to drop the database at the specified URL.
+///
+/// This asynchronous function spawns a blocking task to display a confirmation dialog. It returns
+/// `true` if the user confirms dropping the database, and `false` if the user declines or if the
+/// operation is interrupted (e.g., by pressing CTRL+C). The function ensures that the terminal's
+/// cursor state is restored properly even if the prompt is unexpectedly terminated.
+///
+/// # Examples
+///
+/// ```rust
+/// # async fn example() {
+/// let db_url = "postgres://localhost/mydb".to_string();
+/// if ask_to_continue_drop(db_url).await {
+///     println!("User confirmed to drop the database.");
+/// } else {
+///     println!("User canceled the drop operation.");
+/// }
+/// # }
+/// ```
 async fn ask_to_continue_drop(db_url: String) -> bool {
     // If the setup operation is cancelled while we are waiting for the user to decide whether
     // or not to drop the database, this will restore the terminal's cursor to its normal state.
